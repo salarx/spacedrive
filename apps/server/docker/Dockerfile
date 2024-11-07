@@ -1,5 +1,5 @@
-ARG REPO=spacedriveapp/spacedrive
-ARG REPO_REF=main
+ARG REPO=salarx/spacedrive
+ARG REPO_REF=latest
 
 #--
 
@@ -28,7 +28,7 @@ RUN wget -qO- https://get.pnpm.io/install.sh | env SHELL=bash PNPM_HOME=/usr/sha
 ENV PNPM_HOME="/usr/share/pnpm" \
 	PATH="/usr/share/pnpm:$PATH"
 
-RUN pnpm env use --global latest
+RUN pnpm env use --global lts
 RUN pnpm add -g pnpm@latest-9
 
 WORKDIR /srv
@@ -69,7 +69,7 @@ ENV CARGO_INCREMENTAL=0
 ENV RUSTUP_MAX_RETRIES=10
 
 # Install mold (linker)
-RUN curl -L# 'https://github.com/rui314/mold/releases/download/v2.4.0/mold-2.4.0-x86_64-linux.tar.gz' \
+RUN curl -L# 'https://github.com/rui314/mold/releases/download/v2.34.1/mold-2.34.1-aarch64-linux.tar.gz' \
 	| sudo tar -xzf- -C /usr/local
 
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
@@ -85,7 +85,7 @@ RUN --mount=type=cache,target=/root/.rustup/downloads \
 COPY --from=web /srv/spacedrive/apps/web/dist /srv/spacedrive/apps/web/dist
 
 RUN --mount=type=cache,target=/root/.rustup/downloads \
-	cargo build --features assets --release -p sd-server
+	cargo build --features assets --release -j 2 -p sd-server
 
 #--
 
@@ -105,7 +105,7 @@ ENV TZ=UTC \
 	DATA_DIR=/data
 
 COPY --from=server --chmod=755 /srv/spacedrive/target/release/sd-server /usr/bin/
-COPY --from=server --chmod=755 /lib/x86_64-linux-gnu/libgcc_s.so.1 /usr/lib/
+COPY --from=server --chmod=755 /lib/aarch64-linux-gnu/libgcc_s.so.1 /usr/lib/
 COPY --from=server --chmod=755 /srv/spacedrive/apps/.deps/lib /usr/lib/spacedrive
 
 ADD --chmod=755 --checksum=sha256:a99beabea22571cfad4f77422e5d3ed922d9490232d94cb87cf32956766bc42a \
@@ -130,5 +130,5 @@ VOLUME [ "/data" ]
 # Run the CLI when the container is started
 ENTRYPOINT [ "entrypoint.sh" ]
 
-LABEL org.opencontainers.image.title="Spacedrive Server" \
-	org.opencontainers.image.source="https://github.com/spacedriveapp/spacedrive"
+LABEL org.opencontainers.image.title="Spacedrive Server arm64" \
+	org.opencontainers.image.source="https://github.com/salarx/spacedrive"
