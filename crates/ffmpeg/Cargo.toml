@@ -24,7 +24,7 @@ tracing   = { workspace = true }
 webp      = { workspace = true }
 
 # Specific FFmpeg dependencies
-ffmpeg-sys-next = "7.0"
+ffmpeg-sys-next = "7.1.0"
 
 [dev-dependencies]
 tempfile = { workspace = true }
